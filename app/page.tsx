@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import Image from "next/image";
+import { authenticate, signInWithGoogle } from "@/app/actions/auth";
 
 export default function Home() {
   const [mode, setMode] = useState<"signin" | "register">("signin");
   const [role, setRole] = useState<"student" | "other" | null>(null);
+  const [state, formAction, pending] = useActionState(authenticate, undefined);
+
+  // InControl is for students — block registration for everyone else.
+  const notForYou = mode === "register" && role === "other";
 
   return (
     <div
@@ -94,15 +99,20 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right side — buttons */}
-            <div className="flex flex-col gap-4" style={{ width: "310px" }}>
+            {/* Right side — auth form */}
+            <form action={formAction} className="flex flex-col gap-4" style={{ width: "310px" }}>
               <p style={{ fontFamily: "'IntroRust', sans-serif", fontSize: "2.2rem", color: "#FFFFF0", letterSpacing: "0.04em", marginBottom: "4px" }}>
                 Welcome,
               </p>
 
+              {/* Carry the current mode + role through to the server action */}
+              <input type="hidden" name="intent" value={mode} />
+              <input type="hidden" name="role" value={role ?? ""} />
+
               {/* Sign in / Register */}
               <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={() => setMode("signin")}
                   className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide transition-all"
                   style={{
@@ -115,6 +125,7 @@ export default function Home() {
                   Sign in
                 </button>
                 <button
+                  type="button"
                   onClick={() => setMode("register")}
                   className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide transition-all"
                   style={{
@@ -128,36 +139,113 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* I am a Student */}
-              <button
-                onClick={() => setRole("student")}
-                className="w-full py-2.5 rounded text-sm font-medium tracking-wide text-left px-4 transition-all"
+              {/* Email + password */}
+              <input
+                type="email"
+                name="email"
+                required
+                autoComplete="email"
+                placeholder="Email"
+                className="w-full py-2.5 px-4 rounded text-sm tracking-wide transition-all outline-none"
                 style={{
                   fontFamily: "'GlacialIndifference', sans-serif",
-                  background: role === "student" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                  background: "rgba(255,255,240,0.06)",
                   color: "#FFFFF0",
-                  border: role === "student" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                  border: "1px solid rgba(255,255,240,0.25)",
                 }}
-              >
-                I am a Student...
-              </button>
-
-              {/* I am not a Student */}
-              <button
-                onClick={() => setRole("other")}
-                className="w-full py-2.5 rounded text-sm font-medium tracking-wide text-left px-4 transition-all"
+              />
+              <input
+                type="password"
+                name="password"
+                required
+                minLength={6}
+                autoComplete={mode === "register" ? "new-password" : "current-password"}
+                placeholder="Password"
+                className="w-full py-2.5 px-4 rounded text-sm tracking-wide transition-all outline-none"
                 style={{
                   fontFamily: "'GlacialIndifference', sans-serif",
-                  background: role === "other" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                  background: "rgba(255,255,240,0.06)",
                   color: "#FFFFF0",
-                  border: role === "other" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                  border: "1px solid rgba(255,255,240,0.25)",
+                }}
+              />
+
+              {/* Role — shown when registering */}
+              {mode === "register" && (
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRole("student")}
+                    className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide text-center transition-all"
+                    style={{
+                      fontFamily: "'GlacialIndifference', sans-serif",
+                      background: role === "student" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                      color: "#FFFFF0",
+                      border: role === "student" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                    }}
+                  >
+                    Student
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole("other")}
+                    className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide text-center transition-all"
+                    style={{
+                      fontFamily: "'GlacialIndifference', sans-serif",
+                      background: role === "other" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                      color: "#FFFFF0",
+                      border: role === "other" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                    }}
+                  >
+                    Not a student
+                  </button>
+                </div>
+              )}
+
+              {/* "Not a student" — instant feedback before submitting */}
+              {notForYou && (
+                <p style={{ fontFamily: "'IntroRust', sans-serif", fontSize: "1rem", color: "#E5896A", letterSpacing: "0.02em" }}>
+                  InControl isn&apos;t for you.
+                </p>
+              )}
+
+              {/* Error message */}
+              {state?.error && (
+                <p style={{ fontFamily: "'GlacialIndifference', sans-serif", fontSize: "0.8rem", color: "#E5896A" }}>
+                  {state.error}
+                </p>
+              )}
+
+              {/* Info message (e.g. confirmation email sent) */}
+              {state?.message && (
+                <p style={{ fontFamily: "'GlacialIndifference', sans-serif", fontSize: "0.8rem", color: "#C9A86A", lineHeight: 1.5 }}>
+                  {state.message}
+                </p>
+              )}
+
+              {/* Primary submit */}
+              <button
+                type="submit"
+                disabled={pending || notForYou}
+                className="w-full py-2.5 rounded text-sm font-medium tracking-wide transition-all hover:opacity-90"
+                style={{
+                  fontFamily: "'GlacialIndifference', sans-serif",
+                  background: "#B5905A",
+                  color: "#191919",
+                  border: "1px solid #B5905A",
+                  opacity: pending || notForYou ? 0.6 : 1,
+                  cursor: pending || notForYou ? "not-allowed" : "pointer",
                 }}
               >
-                I am not a Student...
+                {pending ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
               </button>
 
-              {/* Google Sign-in */}
+              {/* Google Sign-in — its own form so it posts straight to OAuth */}
               <button
+                type="submit"
+                formAction={signInWithGoogle}
+                formNoValidate
+                disabled={pending}
                 className="w-full py-2.5 rounded text-sm font-medium tracking-wide flex items-center justify-center gap-2 transition-all hover:opacity-90"
                 style={{
                   fontFamily: "'GlacialIndifference', sans-serif",
@@ -167,9 +255,9 @@ export default function Home() {
                 }}
               >
                 <GoogleIcon />
-                Google Sign-in
+                Continue with Google
               </button>
-            </div>
+            </form>
           </div>
         </div>
 
