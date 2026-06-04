@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
-import { IM_Fell_English } from "next/font/google";
+import { Jost } from "next/font/google";
 import "./globals.css";
 
-const imFell = IM_Fell_English({
-  weight: ["400"],
-  style: ["normal", "italic"],
+const jost = Jost({
+  weight: ["300", "400", "500"],
   subsets: ["latin"],
-  variable: "--font-im-fell",
+  variable: "--font-jost",
 });
 
 export const metadata: Metadata = {
   title: "InControl",
-  description: "Your personal OS for student life.",
+  description: "The Personal OS Webapp for Students and Young Adults",
 };
 
 export default function RootLayout({
@@ -20,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${imFell.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col" style={{ background: "#0d0b08" }}>
+    <html lang="en" className={`${jost.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col" style={{ background: "#191919" }}>
         {children}
       </body>
     </html>

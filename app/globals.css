@@ -1,7 +1,30 @@
 @import "tailwindcss";
 
-body {
-  background: #0d0b08;
-  color: #f0e8d8;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+@font-face {
+  font-family: "IntroRust";
+  src: url("/IntroRust.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GlacialIndifference";
+  src: url("/GlacialIndifference-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden !important;
+  background: #191919;
+  color: #fffff0;
+  font-family: "GlacialIndifference", sans-serif;
+  margin: 0;
 }
