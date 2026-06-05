@@ -20,6 +20,71 @@
   box-sizing: border-box;
 }
 
+/* Onboarding step transition */
+@keyframes obFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ob-fade {
+  animation: obFade 0.45s ease both;
+}
+
+@keyframes obSlowFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.ob-slow-fade {
+  animation: obSlowFade 1.4s ease both;
+}
+
+/* Onboarding question — GlacialIndifference, upright (replaces the italics). */
+.ob-question {
+  font-family: "GlacialIndifference", sans-serif;
+  font-style: normal;
+  color: #e8dcc4;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+
+/* Time-commitment range slider */
+input[type="range"].ob-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 240, 0.25);
+  outline: none;
+}
+input[type="range"].ob-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  background: #b5905a;
+  border: 2px solid #f0ebdd;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+input[type="range"].ob-range::-moz-range-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  background: #b5905a;
+  border: 2px solid #f0ebdd;
+  cursor: pointer;
+}
+
 html, body {
   height: 100%;
   overflow: hidden !important;

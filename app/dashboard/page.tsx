@@ -13,6 +13,18 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
+  // New members must finish onboarding first. A missing row counts as
+  // not-onboarded, so they get sent through the flow.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("onboarded")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profile?.onboarded) {
+    redirect("/onboarding");
+  }
+
   const role = (user.user_metadata?.role as string | undefined) ?? null;
 
   return (

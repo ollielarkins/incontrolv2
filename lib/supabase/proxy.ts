@@ -35,7 +35,11 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Send signed-out visitors hitting a protected route back to the login page.
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  const protectedPrefixes = ["/dashboard", "/onboarding", "/welcome"];
+  const isProtected = protectedPrefixes.some((p) =>
+    request.nextUrl.pathname.startsWith(p),
+  );
+  if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
