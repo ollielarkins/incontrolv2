@@ -1,4 +1,8 @@
 import Image from "next/image";
+import PageShell from "@/app/_components/page-shell";
+import { C, HEAD, BODY } from "@/app/_components/theme";
+import { progressOf, daysUntil, type Objective } from "@/lib/objectives";
+import { gbp } from "@/lib/finance";
 
 /* ───────────────────────────── Types ───────────────────────────── */
 
@@ -15,40 +19,39 @@ export type DashboardProfile = {
   integrations: string[] | null;
 };
 
-/* ─────────────────────────── Design tokens ─────────────────────────── */
-
-const C = {
-  gold: "#B5905A",
-  goldText: "#C8A57D",
-  cream: "#F4EFE5",
-  muted: "rgba(244,239,229,0.45)",
-  faint: "rgba(244,239,229,0.28)",
-  panel: "rgba(22,17,12,0.72)",
-  panelSolid: "#1a1410",
-  border: "rgba(181,144,90,0.22)",
-  borderSoft: "rgba(181,144,90,0.14)",
-};
-
-const HEAD = "'IntroRust', sans-serif";
-const BODY = "'GlacialIndifference', sans-serif";
-
-const NAV = [
-  "COMMAND",
-  "FINANCE",
-  "ROADMAPS",
-  "CAREER",
-  "ANALYTICS",
-  "OBJECTIVES",
-  "STRATEGIST",
-];
-
 /* ───────────────────────────── Component ───────────────────────────── */
 
-export default function CommandCenter({ profile }: { profile: DashboardProfile }) {
-  const goals = (profile.goals ?? []).filter((g) => g?.text?.trim());
+type CareerStats = {
+  interviews: number;
+  offers: number;
+  prospected: number;
+  accepted: number;
+  total: number;
+};
+
+type FinanceStats = {
+  income: number;
+  spend: number;
+  net: number;
+  count: number;
+  topSpend: string | null;
+  topIncome: string | null;
+};
+
+export default function CommandCenter({
+  profile,
+  objectives,
+  career,
+  finance,
+}: {
+  profile: DashboardProfile;
+  objectives: Objective[];
+  career: CareerStats;
+  finance: FinanceStats;
+}) {
   const targetRole = profile.target_role?.trim() || null;
 
-  const objectivesCount = goals.length;
+  const objectivesCount = objectives.length;
   const skillsInProgress = targetRole ? 1 : 0;
 
   const today = new Date()
@@ -56,213 +59,164 @@ export default function CommandCenter({ profile }: { profile: DashboardProfile }
     .toUpperCase();
 
   return (
-    <div className="flex h-screen w-full overflow-hidden" style={{ background: "#141110", color: C.cream }}>
-      {/* faint background texture */}
-      <Image src="/1.png" alt="" fill priority className="object-cover object-center" style={{ opacity: 0.06 }} />
+    <PageShell active="COMMAND">
+      {/* Top bar */}
+      <header className="flex items-start justify-between">
+        <div>
+          <h1 style={{ fontFamily: HEAD, fontSize: "2.1rem", letterSpacing: "0.02em", color: C.cream, lineHeight: 1 }}>
+            COMMAND CENTER
+          </h1>
+          <p style={{ fontFamily: BODY, fontSize: "0.78rem", color: C.muted, marginTop: 6 }}>
+            Single source of truth for your progression, finances and momentum.
+          </p>
+        </div>
+        <div className="flex items-center gap-5">
+          <div className="text-right">
+            <p style={{ fontFamily: BODY, fontSize: "0.58rem", letterSpacing: "0.22em", color: C.faint }}>DATE</p>
+            <p style={{ fontFamily: BODY, fontSize: "0.78rem", color: C.goldText, marginTop: 2 }}>{today}</p>
+          </div>
+          <button
+            className="rounded-sm px-5 py-3"
+            style={{ fontFamily: BODY, fontSize: "0.72rem", letterSpacing: "0.16em", color: C.cream, border: `1px solid ${C.gold}`, background: "rgba(181,144,90,0.08)" }}
+          >
+            LOG PROGRESS
+          </button>
+        </div>
+      </header>
 
-      {/* ───────── Sidebar ───────── */}
-      <aside
-        className="relative z-10 flex h-full flex-col"
-        style={{ width: 268, borderRight: `1px solid ${C.border}`, background: "rgba(15,11,8,0.85)" }}
+      {/* Stats strip */}
+      <section
+        className="mt-5 flex items-stretch rounded-sm"
+        style={{ border: `1px solid ${C.border}`, background: C.panel }}
       >
-        <div className="flex items-center justify-center px-2 pt-4 pb-3">
-          <Image src="/logo-mark.png" alt="InControl" width={224} height={65} priority className="object-contain" />
+        <Stat label="NET THIS MONTH" value={gbp(finance.net)} sub={`${finance.count} TRANSACTIONS`} />
+        <Divider />
+        <Stat label="ACTIVE OBJECTIVES" value={String(objectivesCount)} sub="0 OVERDUE" />
+        <Divider />
+        <Stat label="SKILLS IN PROGRESS" value={String(skillsInProgress)} sub="0 COMPLETED" />
+        <Divider />
+        <div className="flex flex-col justify-center px-5 py-4" style={{ minWidth: 230 }}>
+          <p style={statLabel}>MOMENTUM ACTIVITY</p>
+          <Heatmap />
         </div>
-
-        <p className="px-5 pb-2" style={{ fontFamily: HEAD, fontSize: "0.6rem", letterSpacing: "0.28em", color: C.faint }}>
-          SYSTEMS
-        </p>
-
-        <nav className="flex flex-col">
-          {NAV.map((item) => {
-            const active = item === "COMMAND";
-            return (
-              <button
-                key={item}
-                className="px-5 py-3 text-left transition-colors"
-                style={{
-                  fontFamily: HEAD,
-                  fontSize: "0.74rem",
-                  letterSpacing: "0.12em",
-                  color: active ? C.cream : C.muted,
-                  background: active ? "rgba(181,144,90,0.14)" : "transparent",
-                  borderLeft: active ? `2px solid ${C.gold}` : "2px solid transparent",
-                }}
-              >
-                {item}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="mt-auto flex w-full justify-center px-2 pb-5">
-          <Image
-            src="/signature-mark.png"
-            alt="Signature"
-            width={196}
-            height={54}
-            className="object-contain"
-            style={{ opacity: 0.55 }}
-          />
+        <Divider />
+        <div className="flex flex-1 flex-col justify-center px-5 py-4">
+          <p style={statLabel}>CASHFLOW</p>
+          <div className="mt-1 flex items-center gap-6">
+            <MiniMetric label="INCOME" value={gbp(finance.income)} />
+            <MiniMetric label="SPENT" value={gbp(finance.spend)} />
+            <div className="flex-1">
+              <EmptyLineChart />
+            </div>
+          </div>
         </div>
-      </aside>
+        <Divider />
+        <Stat label="STREAK" value="0" sub="" wide />
+      </section>
 
-      {/* ───────── Main ───────── */}
-      <main className="relative z-10 flex-1 overflow-y-auto px-7 py-5">
-        {/* Top bar */}
-        <header className="flex items-start justify-between">
-          <div>
-            <h1 style={{ fontFamily: HEAD, fontSize: "2.1rem", letterSpacing: "0.02em", color: C.cream, lineHeight: 1 }}>
-              COMMAND CENTER
-            </h1>
-            <p style={{ fontFamily: BODY, fontSize: "0.78rem", color: C.muted, marginTop: 6 }}>
-              Single source of truth for your progression, finances and momentum.
-            </p>
-          </div>
-          <div className="flex items-center gap-5">
-            <div className="text-right">
-              <p style={{ fontFamily: BODY, fontSize: "0.58rem", letterSpacing: "0.22em", color: C.faint }}>DATE</p>
-              <p style={{ fontFamily: BODY, fontSize: "0.78rem", color: C.goldText, marginTop: 2 }}>{today}</p>
+      {/* Body: center + right columns */}
+      <div className="mt-6 flex min-h-0 flex-1 gap-6">
+        {/* Center column */}
+        <div className="flex-1">
+          {/* Intelligence */}
+          <SectionLabel kicker="INTELLIGENCE" title="AI STRATEGIST" action="OPEN >" />
+          <div className="flex items-stretch gap-3 rounded-sm p-3" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
+            <div className="flex items-center justify-center rounded-sm px-4" style={{ border: `1px solid ${C.borderSoft}` }}>
+              <Image src="/logo-mark.png" alt="" width={86} height={25} className="object-contain" />
             </div>
-            <button
-              className="rounded-sm px-5 py-3"
-              style={{ fontFamily: BODY, fontSize: "0.72rem", letterSpacing: "0.16em", color: C.cream, border: `1px solid ${C.gold}`, background: "rgba(181,144,90,0.08)" }}
-            >
-              LOG PROGRESS
-            </button>
-          </div>
-        </header>
-
-        {/* Stats strip */}
-        <section
-          className="mt-5 flex items-stretch rounded-sm"
-          style={{ border: `1px solid ${C.border}`, background: C.panel }}
-        >
-          <Stat label="NET THIS MONTH" value="£0" sub="0 TRANSACTIONS" />
-          <Divider />
-          <Stat label="ACTIVE OBJECTIVES" value={String(objectivesCount)} sub="0 OVERDUE" />
-          <Divider />
-          <Stat label="SKILLS IN PROGRESS" value={String(skillsInProgress)} sub="0 COMPLETED" />
-          <Divider />
-          <div className="flex flex-col justify-center px-5 py-4" style={{ minWidth: 230 }}>
-            <p style={statLabel}>MOMENTUM ACTIVITY</p>
-            <Heatmap />
-          </div>
-          <Divider />
-          <div className="flex flex-1 flex-col justify-center px-5 py-4">
-            <p style={statLabel}>CASHFLOW</p>
-            <div className="mt-1 flex items-center gap-6">
-              <MiniMetric label="INCOME" value="£0" />
-              <MiniMetric label="SPENT" value="£0" />
-              <div className="flex-1">
-                <EmptyLineChart />
-              </div>
-            </div>
-          </div>
-          <Divider />
-          <Stat label="STREAK" value="0" sub="" wide />
-        </section>
-
-        {/* Body: center + right columns */}
-        <div className="mt-6 flex gap-6">
-          {/* Center column */}
-          <div className="flex-1">
-            {/* Intelligence */}
-            <SectionLabel kicker="INTELLIGENCE" title="AI STRATEGIST" action="OPEN >" />
-            <div className="rounded-sm px-4 py-4" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center rounded-sm px-3 py-2" style={{ border: `1px solid ${C.borderSoft}` }}>
-                  <Image src="/Untitled design.png" alt="" width={92} height={22} className="object-contain" />
-                </div>
-                <p style={{ fontFamily: BODY, fontSize: "0.82rem", color: C.muted }}>
-                  Log your first progress to unlock a strategist briefing.
-                </p>
-              </div>
-            </div>
-
-            {/* Operations */}
-            <div className="mt-7">
-              <SectionLabel kicker="OPERATIONS" title="ACTIVE OBJECTIVES" />
-              {objectivesCount === 0 ? (
-                <EmptyState text="No objectives yet." />
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {goals.slice(0, 2).map((g, i) => (
-                    <ObjectiveCard key={i} index={i + 1} title={g.text} horizon={g.horizon} />
-                  ))}
-                  {goals.length > 2 && (
-                    <button
-                      className="self-end rounded-sm px-4 py-2"
-                      style={{ fontFamily: BODY, fontSize: "0.68rem", letterSpacing: "0.12em", color: C.goldText, border: `1px solid ${C.border}` }}
-                    >
-                      SEE MORE ⌄
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Progression */}
-            <div className="mt-7">
-              <SectionLabel kicker="PROGRESSION" title="SKILL MOMENTUM" action="OPEN >" />
-              {targetRole ? (
-                <div className="flex flex-col gap-3">
-                  <SkillBar label={targetRole} pct={0} />
-                </div>
-              ) : (
-                <EmptyState text="No skills tracked yet." />
-              )}
+            <div className="flex flex-1 items-center rounded-sm px-4 py-3" style={{ border: `1px solid ${C.borderSoft}`, background: "rgba(181,144,90,0.06)" }}>
+              <p style={{ fontFamily: BODY, fontSize: "0.82rem", color: C.muted }}>Log your first progress to unlock a strategist briefing.</p>
             </div>
           </div>
 
-          {/* Right column */}
-          <div style={{ width: 300 }} className="flex flex-col gap-5">
-            {/* Finance */}
-            <Panel>
-              <PanelHead title="FINANCE" action="OPEN >" />
-              <div className="mt-2 flex gap-8">
-                <MiniMetric label="INCOME" value="£0" big />
-                <MiniMetric label="SPENT" value="£0" big />
-              </div>
-              <div className="mt-3">
-                <EmptyLineChart height={70} />
-              </div>
-              <p style={topLine}>TOP SPEND: <span style={{ color: C.faint }}>—</span></p>
-              <p style={topLine}>TOP INCOME: <span style={{ color: C.faint }}>—</span></p>
-            </Panel>
-
-            {/* Career */}
-            <Panel>
-              <PanelHead title="CAREER" action="OPEN >" />
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                <CareerBox value="0" label="INTERVIEWS" />
-                <CareerBox value="0" label="OFFERS" />
-                <CareerBox value="0" label="PROSPECTED" />
-              </div>
-              <div className="mt-3 flex items-stretch rounded-sm" style={{ border: `1px solid ${C.border}` }}>
-                <div className="flex-1 px-3 py-3">
-                  <p style={{ fontFamily: HEAD, fontSize: "1.1rem", color: C.goldText }}>0</p>
-                  <button style={{ fontFamily: BODY, fontSize: "0.62rem", letterSpacing: "0.12em", color: C.goldText, marginTop: 4, border: `1px solid ${C.border}`, padding: "2px 8px", borderRadius: 2 }}>
+          {/* Operations */}
+          <div className="mt-5">
+            <SectionLabel kicker="OPERATIONS" title="ACTIVE OBJECTIVES" />
+            {objectivesCount === 0 ? (
+              <EmptyState text="No objectives yet." />
+            ) : (
+              <div className="flex flex-col gap-3">
+                {objectives.slice(0, 2).map((o) => (
+                  <ObjectiveCard
+                    key={o.id}
+                    title={o.title}
+                    label={o.topic ?? "OBJECTIVE"}
+                    pct={progressOf(o.subtasks)}
+                    days={daysUntil(o.due_date)}
+                  />
+                ))}
+                {objectives.length > 2 && (
+                  <button
+                    className="self-end rounded-sm px-4 py-2"
+                    style={{ fontFamily: BODY, fontSize: "0.68rem", letterSpacing: "0.12em", color: C.goldText, border: `1px solid ${C.border}` }}
+                  >
                     SEE MORE ⌄
                   </button>
-                </div>
-                <div className="flex items-center justify-center px-2" style={{ borderLeft: `1px solid ${C.border}` }}>
-                  <span style={{ fontFamily: BODY, fontSize: "0.55rem", letterSpacing: "0.18em", color: C.faint, writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                    ACCEPTED
-                  </span>
-                </div>
+                )}
               </div>
-            </Panel>
+            )}
+          </div>
 
-            {/* Archives */}
-            <Panel className="flex-1">
-              <p style={{ fontFamily: BODY, fontSize: "0.7rem", letterSpacing: "0.2em", color: C.muted }}>ARCHIVES</p>
-              <p style={{ fontFamily: BODY, fontSize: "0.72rem", color: C.faint, marginTop: 10 }}>Nothing archived yet.</p>
-            </Panel>
+          {/* Progression */}
+          <div className="mt-5">
+            <SectionLabel kicker="PROGRESSION" title="SKILL MOMENTUM" action="OPEN >" />
+            {targetRole ? (
+              <div className="flex flex-col gap-3">
+                <SkillBar label={targetRole} pct={0} />
+              </div>
+            ) : (
+              <EmptyState text="No skills tracked yet." />
+            )}
           </div>
         </div>
-      </main>
-    </div>
+
+        {/* Right column */}
+        <div style={{ width: 300 }} className="flex min-h-0 flex-col gap-5">
+          {/* Finance */}
+          <Panel>
+            <PanelHead title="FINANCE" action="OPEN >" />
+            <div className="mt-2 flex gap-8">
+              <MiniMetric label="INCOME" value={gbp(finance.income)} big />
+              <MiniMetric label="SPENT" value={gbp(finance.spend)} big />
+            </div>
+            <div className="mt-3">
+              <EmptyLineChart height={70} />
+            </div>
+            <p style={topLine}>TOP SPEND: <span style={{ color: C.faint }}>{finance.topSpend ?? "—"}</span></p>
+            <p style={topLine}>TOP INCOME: <span style={{ color: C.faint }}>{finance.topIncome ?? "—"}</span></p>
+          </Panel>
+
+          {/* Career */}
+          <Panel>
+            <PanelHead title="CAREER" action="OPEN >" />
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <CareerBox value={String(career.interviews)} label="INTERVIEWS" />
+              <CareerBox value={String(career.offers)} label="OFFERS" />
+              <CareerBox value={String(career.prospected)} label="PROSPECTED" />
+            </div>
+            <div className="mt-3 flex items-stretch rounded-sm" style={{ border: `1px solid ${C.border}` }}>
+              <div className="flex-1 px-3 py-3">
+                <p style={{ fontFamily: HEAD, fontSize: "1.1rem", color: C.goldText }}>{career.accepted}/{career.total}</p>
+                <button style={{ fontFamily: BODY, fontSize: "0.62rem", letterSpacing: "0.12em", color: C.goldText, marginTop: 4, border: `1px solid ${C.border}`, padding: "2px 8px", borderRadius: 2 }}>
+                  SEE MORE ⌄
+                </button>
+              </div>
+              <div className="flex items-center justify-center px-2" style={{ borderLeft: `1px solid ${C.border}` }}>
+                <span style={{ fontFamily: BODY, fontSize: "0.55rem", letterSpacing: "0.18em", color: C.faint, writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                  ACCEPTED
+                </span>
+              </div>
+            </div>
+          </Panel>
+
+          {/* Archives */}
+          <Panel className="flex-1">
+            <p style={{ fontFamily: BODY, fontSize: "0.7rem", letterSpacing: "0.2em", color: C.muted }}>ARCHIVES</p>
+            <p style={{ fontFamily: BODY, fontSize: "0.72rem", color: C.faint, marginTop: 10 }}>Nothing archived yet.</p>
+          </Panel>
+        </div>
+      </div>
+    </PageShell>
   );
 }
 
@@ -335,20 +289,20 @@ function PanelHead({ title, action }: { title: string; action?: string }) {
   );
 }
 
-function ObjectiveCard({ index, title, horizon }: { index: number; title: string; horizon: string }) {
+function ObjectiveCard({ title, label, pct, days }: { title: string; label: string; pct: number; days: number | null }) {
   return (
-    <div className="rounded-sm px-5 py-4" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
+    <div className="rounded-sm px-5 py-3" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
       <div className="flex items-start justify-between">
-        <p style={{ fontFamily: BODY, fontSize: "0.6rem", letterSpacing: "0.2em", color: C.faint }}>
-          {String(index).padStart(2, "0")}
+        <p style={{ fontFamily: BODY, fontSize: "0.6rem", letterSpacing: "0.2em", color: C.goldText, textTransform: "uppercase" }}>
+          {label}
         </p>
-        <p style={{ fontFamily: BODY, fontSize: "0.62rem", letterSpacing: "0.14em", color: C.goldText, textTransform: "uppercase" }}>
-          {horizon}
+        <p style={{ fontFamily: BODY, fontSize: "0.62rem", letterSpacing: "0.14em", color: C.faint }}>
+          {days !== null ? `${days} DAYS` : "—"}
         </p>
       </div>
-      <p style={{ fontFamily: HEAD, fontSize: "1.55rem", color: C.cream, lineHeight: 1.05, marginTop: 2 }}>{title}</p>
-      <div className="mt-4">
-        <ProgressBar pct={0} />
+      <p style={{ fontFamily: HEAD, fontSize: "1.45rem", color: C.cream, lineHeight: 1.05, marginTop: 2 }}>{title}</p>
+      <div className="mt-3">
+        <ProgressBar pct={pct} />
       </div>
     </div>
   );
@@ -397,14 +351,14 @@ function EmptyState({ text }: { text: string }) {
   );
 }
 
-// Empty momentum heatmap — all cells inactive until activity is logged.
+// Empty momentum heatmap — denser grid; all cells inactive until activity is logged.
 function Heatmap() {
-  const cols = 18;
-  const rows = 5;
+  const cols = 20;
+  const rows = 7;
   return (
-    <div className="mt-2" style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 3, width: 210 }}>
+    <div className="mt-2" style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 2.5, width: 230 }}>
       {Array.from({ length: cols * rows }).map((_, i) => (
-        <div key={i} style={{ aspectRatio: "1", borderRadius: 1, background: "rgba(181,144,90,0.08)" }} />
+        <div key={i} style={{ aspectRatio: "1", borderRadius: 1, background: "rgba(181,144,90,0.09)", border: "1px solid rgba(181,144,90,0.05)" }} />
       ))}
     </div>
   );
