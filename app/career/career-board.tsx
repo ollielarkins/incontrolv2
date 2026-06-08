@@ -134,14 +134,14 @@ export default function CareerBoard({
         <div className="flex gap-5">
           <div className="flex-1 rounded-sm px-5 py-4" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
             <p style={{ fontFamily: HEAD, fontSize: "0.8rem", letterSpacing: "0.06em", color: C.cream }}>FOLLOW-UPS</p>
-            <div className="mt-3 flex flex-col gap-2">
+            <div className="mt-4 flex flex-col gap-4">
               {followUps.length === 0 && <p style={{ fontFamily: BODY, fontSize: "0.74rem", color: C.faint }}>No follow-ups scheduled.</p>}
               {followUps.map((a) => {
                 const d = daysUntil(a.follow_up_on);
                 return (
                   <div key={a.id} className="flex items-center justify-between">
-                    <span style={{ fontFamily: BODY, fontSize: "0.82rem", color: C.cream }}>{a.title}</span>
-                    <span style={{ fontFamily: HEAD, fontSize: "1.05rem", color: d !== null && d < 0 ? "#E5896A" : C.goldText }}>
+                    <span style={{ fontFamily: HEAD, fontSize: "1.15rem", color: C.cream }}>{a.title}</span>
+                    <span style={{ fontFamily: HEAD, fontSize: "1.5rem", color: d !== null && d < 0 ? "#E5896A" : C.goldText }}>
                       {d === null ? "—" : `${d} DAYS`}
                     </span>
                   </div>
@@ -152,16 +152,16 @@ export default function CareerBoard({
 
           <div className="flex-1 rounded-sm px-5 py-4" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
             <p style={{ fontFamily: HEAD, fontSize: "0.8rem", letterSpacing: "0.06em", color: C.cream }}>CONVERSIONS</p>
-            <div className="mt-3 flex flex-col gap-3">
+            <div className="mt-4 flex flex-col gap-4">
               {(["applied", "interview", "accepted", "rejected"] as Status[]).map((s) => (
                 <div key={s} className="flex items-center gap-3">
-                  <span style={{ fontFamily: HEAD, fontSize: "0.92rem", color: C.cream, width: 104 }}>
+                  <span style={{ fontFamily: HEAD, fontSize: "1.3rem", color: C.cream, width: 132 }}>
                     {s === "rejected" ? "DECLINED" : STATUS_LABELS[s]}
                   </span>
-                  <div className="relative h-[16px] flex-1 rounded-full" style={{ background: "rgba(181,144,90,0.14)" }}>
+                  <div className="relative h-[20px] flex-1 rounded-full" style={{ background: "rgba(181,144,90,0.14)" }}>
                     <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${(counts[s] / maxCount) * 100}%`, background: C.gold }} />
                   </div>
-                  <span style={{ fontFamily: HEAD, fontSize: "0.92rem", color: C.goldText, width: 22, textAlign: "right" }}>{counts[s]}</span>
+                  <span style={{ fontFamily: HEAD, fontSize: "1.3rem", color: C.goldText, width: 26, textAlign: "right" }}>{counts[s]}</span>
                 </div>
               ))}
             </div>

@@ -62,7 +62,7 @@ export default function StrategistChat({ today }: { today: string }) {
         <div className="flex-1 overflow-y-auto px-8 py-6">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center">
-              <Star size={58} />
+              <Star size={66} />
               <p className="mt-6" style={{ fontFamily: BODY, fontStyle: "italic", fontSize: "1.6rem", color: "#E8DCC4" }}>
                 ask anything about your operation.
               </p>

@@ -127,24 +127,29 @@ export default function ObjectivesBoard({
             <Pill onClick={() => undefined}>EDIT</Pill>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto rounded-sm p-4" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
-            {creating && (
-              <CreateForm pending={pending} onCancel={() => setCreating(false)} onCreate={handleCreate} />
-            )}
-            {objectives.length === 0 && !creating ? (
-              <p style={{ fontFamily: BODY, fontSize: "0.78rem", color: C.faint }}>No objectives yet — hit NEW OBJECTIVE to create one.</p>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {objectives.map((o) => (
-                  <ObjectiveCard
-                    key={o.id}
-                    objective={o}
-                    selected={o.id === selected?.id}
-                    onClick={() => { setSelectedId(o.id); setEditing(false); }}
-                  />
-                ))}
-              </div>
-            )}
+          <div className="flex min-h-0 flex-1 flex-col rounded-sm" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+              {creating && (
+                <CreateForm pending={pending} onCancel={() => setCreating(false)} onCreate={handleCreate} />
+              )}
+              {objectives.length === 0 && !creating ? (
+                <p style={{ fontFamily: BODY, fontSize: "0.78rem", color: C.faint }}>No objectives yet — hit NEW OBJECTIVE to create one.</p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {objectives.map((o) => (
+                    <ObjectiveCard
+                      key={o.id}
+                      objective={o}
+                      selected={o.id === selected?.id}
+                      onClick={() => { setSelectedId(o.id); setEditing(false); }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="p-3" style={{ borderTop: `1px solid ${C.border}` }}>
+              <button className="w-full rounded-sm py-2" style={{ fontFamily: BODY, fontSize: "0.7rem", letterSpacing: "0.16em", color: C.goldText, border: `1px solid ${C.border}`, background: "rgba(22,17,12,0.5)" }}>SEE MORE ⌄</button>
+            </div>
           </div>
         </div>
 
@@ -355,7 +360,7 @@ function ObjectiveCard({
       onClick={onClick}
       className="w-full rounded-sm px-5 py-4 text-left transition-colors"
       style={{
-        border: selected ? `1px solid ${C.gold}` : `1px solid ${C.border}`,
+        border: selected ? `1px solid ${C.gold}` : `1px solid rgba(181,144,90,0.45)`,
         background: selected ? "rgba(181,144,90,0.1)" : C.panel,
         boxShadow: selected ? `0 0 0 1px ${C.gold} inset` : "none",
       }}

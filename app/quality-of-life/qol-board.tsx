@@ -278,13 +278,15 @@ function Schedule({ blocks, pending, onChange }: { blocks: ScheduleBlock[]; pend
       <div className="flex flex-1 flex-col gap-3">
         {blocks.length === 0 && !editing && <p style={{ fontFamily: BODY, fontSize: "0.74rem", color: C.faint }}>No schedule blocks yet — tap EDIT to add.</p>}
         {blocks.map((b) => (
-          <div key={b.id} className="flex items-center gap-3 rounded-sm px-4 py-3" style={{ border: `1px solid ${C.border}`, background: "rgba(22,17,12,0.5)" }}>
-            <span style={{ fontFamily: HEAD, fontSize: "0.7rem", letterSpacing: "0.08em", color: C.goldText, width: 56, flexShrink: 0 }}>{b.time || "—"}</span>
-            <div className="flex-1">
+          <div key={b.id} className="flex flex-1 items-stretch gap-3 rounded-sm" style={{ border: `1px solid ${C.border}`, background: "rgba(22,17,12,0.5)", minHeight: 56 }}>
+            <div className="flex items-center justify-center" style={{ width: 34, borderRight: `1px solid ${C.borderSoft}`, flexShrink: 0 }}>
+              <span style={{ fontFamily: HEAD, fontSize: "0.62rem", letterSpacing: "0.06em", color: C.goldText, writingMode: "vertical-rl", transform: "rotate(180deg)" }}>{b.time || "—"}</span>
+            </div>
+            <div className="flex flex-1 flex-col justify-center py-2 pr-2">
               <p style={{ fontFamily: HEAD, fontSize: "0.95rem", color: C.cream }}>{b.topic}</p>
               {b.detail && <p style={{ fontFamily: BODY, fontSize: "0.72rem", color: C.muted, marginTop: 1 }}>{b.detail}</p>}
             </div>
-            {editing && <button onClick={() => onChange(blocks.filter((x) => x.id !== b.id))} disabled={pending} style={{ fontFamily: BODY, color: C.faint }} aria-label="delete">×</button>}
+            {editing && <button onClick={() => onChange(blocks.filter((x) => x.id !== b.id))} disabled={pending} className="self-start p-2" style={{ fontFamily: BODY, color: C.faint }} aria-label="delete">×</button>}
           </div>
         ))}
       </div>

@@ -151,7 +151,16 @@ export default function RoadmapBoard({ nodes: initial, today }: { nodes: Roadmap
         />
       </div>
 
-      <div className="mt-4 flex min-h-0 flex-1 gap-5">
+      {/* Filter chips */}
+      <div className="mt-2 flex items-center gap-2">
+        <span style={{ fontFamily: BODY, fontSize: "0.58rem", letterSpacing: "0.16em", color: C.faint }}>FILTER NODES</span>
+        {["ENGINEERING", "AI", "FINANCE", "CAREER"].map((c) => (
+          <button key={c} className="rounded-sm px-3 py-1" style={chipStyle}>{c}</button>
+        ))}
+        <button className="rounded-sm px-3 py-1" style={chipStyle}>SEE MORE ⌄</button>
+      </div>
+
+      <div className="mt-3 flex min-h-0 flex-1 gap-5">
         {/* Canvas */}
         <div
           ref={canvasRef}

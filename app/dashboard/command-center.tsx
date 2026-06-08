@@ -95,12 +95,12 @@ export default function CommandCenter({
         <Divider />
         <Stat label="SKILLS IN PROGRESS" value={String(skillsInProgress)} sub="0 COMPLETED" />
         <Divider />
-        <div className="flex flex-col justify-center px-5 py-4" style={{ minWidth: 230 }}>
+        <div className="flex flex-col justify-center px-5 py-3" style={{ minWidth: 230 }}>
           <p style={statLabel}>MOMENTUM ACTIVITY</p>
           <Heatmap />
         </div>
         <Divider />
-        <div className="flex flex-1 flex-col justify-center px-5 py-4">
+        <div className="flex flex-1 flex-col justify-center px-5 py-3">
           <p style={statLabel}>CASHFLOW</p>
           <div className="mt-1 flex items-center gap-6">
             <MiniMetric label="INCOME" value={gbp(finance.income)} />
@@ -115,7 +115,7 @@ export default function CommandCenter({
       </section>
 
       {/* Body: center + right columns */}
-      <div className="mt-6 flex min-h-0 flex-1 gap-6">
+      <div className="mt-5 flex min-h-0 flex-1 gap-6">
         {/* Center column */}
         <div className="flex-1">
           {/* Intelligence */}
@@ -243,7 +243,7 @@ function Divider() {
 
 function Stat({ label, value, sub, wide }: { label: string; value: string; sub: string; wide?: boolean }) {
   return (
-    <div className="flex flex-col justify-center px-5 py-4" style={{ minWidth: wide ? 150 : 130 }}>
+    <div className="flex flex-col justify-center px-5 py-3" style={{ minWidth: wide ? 150 : 130 }}>
       <p style={statLabel}>{label}</p>
       <p style={{ fontFamily: HEAD, fontSize: "1.7rem", color: C.goldText, lineHeight: 1.1, marginTop: 4 }}>{value}</p>
       {sub && <p style={{ fontFamily: BODY, fontSize: "0.58rem", letterSpacing: "0.1em", color: C.faint, marginTop: 2 }}>{sub}</p>}
@@ -291,7 +291,7 @@ function PanelHead({ title, action }: { title: string; action?: string }) {
 
 function ObjectiveCard({ title, label, pct, days }: { title: string; label: string; pct: number; days: number | null }) {
   return (
-    <div className="rounded-sm px-5 py-3" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
+    <div className="rounded-sm px-5 py-2.5" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
       <div className="flex items-start justify-between">
         <p style={{ fontFamily: BODY, fontSize: "0.6rem", letterSpacing: "0.2em", color: C.goldText, textTransform: "uppercase" }}>
           {label}
@@ -300,8 +300,8 @@ function ObjectiveCard({ title, label, pct, days }: { title: string; label: stri
           {days !== null ? `${days} DAYS` : "—"}
         </p>
       </div>
-      <p style={{ fontFamily: HEAD, fontSize: "1.45rem", color: C.cream, lineHeight: 1.05, marginTop: 2 }}>{title}</p>
-      <div className="mt-3">
+      <p style={{ fontFamily: HEAD, fontSize: "1.35rem", color: C.cream, lineHeight: 1.05, marginTop: 2 }}>{title}</p>
+      <div className="mt-2">
         <ProgressBar pct={pct} />
       </div>
     </div>

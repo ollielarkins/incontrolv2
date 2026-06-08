@@ -99,14 +99,17 @@ export default function FinanceBoard({
         <VDiv />
         <Metric label="SPEND" value={gbp(stats.spend)} />
         <VDiv />
+        <div className="flex flex-1 items-center gap-4 px-5 py-4">
+          <div className="min-w-0 flex-1">
+            <p style={lbl}>BY CATEGORY</p>
+            <CategoryBars cats={stats.spendCats} />
+          </div>
+          <Donut size={62} segments={stats.spendCats.map((c) => ({ label: c.category, value: c.amount }))} />
+        </div>
+        <VDiv />
         <Metric label="NET" value={gbp(stats.net)} sub={`${stats.count} TRANSACTIONS`} />
         <VDiv />
         <Metric label="SUBSCRIPTIONS / MO" value={gbp(stats.subsMonthly)} sub={`${gbp(stats.subsMonthly * 12)} / YR`} />
-        <VDiv />
-        <div className="flex flex-1 flex-col justify-center px-5 py-4">
-          <p style={lbl}>TOP SPEND CATEGORIES</p>
-          <CategoryBars cats={stats.spendCats} />
-        </div>
       </section>
 
       <div className="mt-5 flex min-h-0 flex-1 flex-col gap-5">
@@ -114,7 +117,10 @@ export default function FinanceBoard({
         <div className="flex gap-5">
           <div className="flex-1 rounded-sm px-5 py-4" style={{ border: `1px solid ${C.border}`, background: C.panel }}>
             <div className="flex items-center justify-between">
-              <p style={{ fontFamily: HEAD, fontSize: "0.82rem", color: C.cream }}>TREND · INCOME VS SPEND</p>
+              <div>
+                <p style={{ fontFamily: HEAD, fontSize: "0.82rem", color: C.cream }}>TREND</p>
+                <p style={{ fontFamily: HEAD, fontSize: "0.72rem", color: C.goldText, marginTop: 2 }}>INCOME VS SPEND</p>
+              </div>
               <div className="flex gap-4">
                 <Legend color={C.gold} label="INCOME" />
                 <Legend color="rgba(244,239,229,0.4)" label="SPEND" />
@@ -257,10 +263,11 @@ function TrendChart({ points }: { points: { label: string; key: string; income: 
   );
 }
 
-function Donut({ segments }: { segments: { label: string; value: number }[] }) {
+function Donut({ segments, size = 110 }: { segments: { label: string; value: number }[]; size?: number }) {
+  const hole = Math.round(size * 0.58);
   const total = segments.reduce((a, s) => a + s.value, 0);
   if (total === 0) {
-    return <div style={{ width: 110, height: 110, borderRadius: 9999, border: `10px solid rgba(181,144,90,0.16)` }} />;
+    return <div style={{ width: size, height: size, borderRadius: 9999, border: `${Math.round(size * 0.09)}px solid rgba(181,144,90,0.16)` }} />;
   }
   const stops = segments
     .map((s, i) => {
@@ -271,8 +278,8 @@ function Donut({ segments }: { segments: { label: string; value: number }[] }) {
     })
     .join(", ");
   return (
-    <div style={{ width: 110, height: 110, borderRadius: 9999, background: `conic-gradient(${stops})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ width: 64, height: 64, borderRadius: 9999, background: "#1a1410" }} />
+    <div style={{ width: size, height: size, borderRadius: 9999, background: `conic-gradient(${stops})`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <div style={{ width: hole, height: hole, borderRadius: 9999, background: "#1a1410" }} />
     </div>
   );
 }
