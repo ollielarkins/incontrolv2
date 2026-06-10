@@ -80,7 +80,7 @@ export default function Home() {
                   fontFamily: "'GlacialIndifference', sans-serif",
                   fontWeight: 300,
                   fontSize: "0.95rem",
-                  color: "rgba(255,255,240,0.65)",
+                  color: "rgba(255,255,240,0.85)",
                   lineHeight: 1.7,
                   maxWidth: "320px",
                 }}
@@ -100,7 +100,7 @@ export default function Home() {
             </div>
 
             {/* Right side — auth form */}
-            <form action={formAction} className="flex flex-col gap-4" style={{ width: "310px" }}>
+            <form action={formAction} className="auth-form flex flex-col gap-4" style={{ width: "310px" }}>
               <p style={{ fontFamily: "'IntroRust', sans-serif", fontSize: "2.2rem", color: "#FFFFF0", letterSpacing: "0.04em", marginBottom: "4px" }}>
                 Welcome,
               </p>
@@ -117,9 +117,9 @@ export default function Home() {
                   className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide transition-all"
                   style={{
                     fontFamily: "'GlacialIndifference', sans-serif",
-                    background: mode === "signin" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                    background: mode === "signin" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.14)",
                     color: "#FFFFF0",
-                    border: mode === "signin" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                    border: mode === "signin" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.45)",
                   }}
                 >
                   Sign in
@@ -130,9 +130,9 @@ export default function Home() {
                   className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide transition-all"
                   style={{
                     fontFamily: "'GlacialIndifference', sans-serif",
-                    background: mode === "register" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                    background: mode === "register" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.14)",
                     color: "#FFFFF0",
-                    border: mode === "register" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                    border: mode === "register" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.45)",
                   }}
                 >
                   Register
@@ -149,9 +149,9 @@ export default function Home() {
                 className="w-full py-2.5 px-4 rounded text-sm tracking-wide transition-all outline-none"
                 style={{
                   fontFamily: "'GlacialIndifference', sans-serif",
-                  background: "rgba(255,255,240,0.06)",
+                  background: "rgba(255,255,240,0.14)",
                   color: "#FFFFF0",
-                  border: "1px solid rgba(255,255,240,0.25)",
+                  border: "1px solid rgba(255,255,240,0.45)",
                 }}
               />
               <input
@@ -164,9 +164,9 @@ export default function Home() {
                 className="w-full py-2.5 px-4 rounded text-sm tracking-wide transition-all outline-none"
                 style={{
                   fontFamily: "'GlacialIndifference', sans-serif",
-                  background: "rgba(255,255,240,0.06)",
+                  background: "rgba(255,255,240,0.14)",
                   color: "#FFFFF0",
-                  border: "1px solid rgba(255,255,240,0.25)",
+                  border: "1px solid rgba(255,255,240,0.45)",
                 }}
               />
 
@@ -179,9 +179,9 @@ export default function Home() {
                     className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide text-center transition-all"
                     style={{
                       fontFamily: "'GlacialIndifference', sans-serif",
-                      background: role === "student" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                      background: role === "student" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.14)",
                       color: "#FFFFF0",
-                      border: role === "student" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                      border: role === "student" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.45)",
                     }}
                   >
                     Student
@@ -192,9 +192,9 @@ export default function Home() {
                     className="flex-1 py-2.5 rounded text-sm font-medium tracking-wide text-center transition-all"
                     style={{
                       fontFamily: "'GlacialIndifference', sans-serif",
-                      background: role === "other" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.06)",
+                      background: role === "other" ? "rgba(181,144,90,0.18)" : "rgba(255,255,240,0.14)",
                       color: "#FFFFF0",
-                      border: role === "other" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.25)",
+                      border: role === "other" ? "1px solid #B5905A" : "1px solid rgba(255,255,240,0.45)",
                     }}
                   >
                     Not a student
@@ -249,9 +249,9 @@ export default function Home() {
                 className="w-full py-2.5 rounded text-sm font-medium tracking-wide flex items-center justify-center gap-2 transition-all hover:opacity-90"
                 style={{
                   fontFamily: "'GlacialIndifference', sans-serif",
-                  background: "rgba(255,255,240,0.06)",
+                  background: "rgba(255,255,240,0.14)",
                   color: "#FFFFF0",
-                  border: "1px solid rgba(255,255,240,0.25)",
+                  border: "1px solid rgba(255,255,240,0.45)",
                 }}
               >
                 <GoogleIcon />
