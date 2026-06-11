@@ -67,22 +67,6 @@ export async function authenticate(
   redirect("/dashboard");
 }
 
-// Google OAuth. Supabase returns a URL we redirect the browser to; after Google
-// it lands back on /auth/callback to exchange the code for a session.
-export async function signInWithGoogle() {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: `${await getOrigin()}/auth/callback?next=/dashboard`,
-    },
-  });
-
-  if (error) throw new Error(error.message);
-  if (data.url) redirect(data.url);
-}
-
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
