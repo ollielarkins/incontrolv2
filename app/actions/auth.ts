@@ -6,14 +6,17 @@ import { createClient } from "@/lib/supabase/server";
 
 export type AuthState = { error?: string; message?: string } | undefined;
 
-// Builds an absolute URL for the current deployment (used for OAuth/email
-// redirects). Falls back to the request's own origin in dev.
+// Builds an absolute URL for the current deployment (used for email-confirmation
+// redirects). Pins to the canonical site so links never point at localhost or a
+// preview host: an explicit NEXT_PUBLIC_SITE_URL wins, then Vercel's injected
+// production domain, then the request's own origin (covers local dev).
 async function getOrigin() {
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
   const h = await headers();
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`
-  );
+  return `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
 }
 
 // Email + password sign in / register, driven by a hidden `intent` field so a
